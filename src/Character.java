@@ -5,13 +5,13 @@ public class Character {
 	
 	private String name;
 	
-	private String type;
+	private CharacterType type;
 	
 	private Location location;
 
 	public Character() {}
 	
-	public Character(int id, String name, String type, Location location) {
+	public Character(int id, String name, CharacterType type, Location location) {
 		this.id = id;
 		this.name = name;
 		this.type = type;
@@ -34,11 +34,11 @@ public class Character {
 		this.name = name;
 	}
 
-	public String getType() {
+	public CharacterType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(CharacterType type) {
 		this.type = type;
 	}
 

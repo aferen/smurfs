@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 
 public class Main extends JFrame {
 
+	private static final long serialVersionUID = 1L;
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -34,7 +36,8 @@ public class Main extends JFrame {
 		Button button = new Button("Start");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				GameMap gameMap = new GameMap();
+				dispose();
 			}
 		});
 		button.setForeground(Color.WHITE);
