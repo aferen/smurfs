@@ -1,13 +1,13 @@
 
-public class Location {
+public class Lokasyon {
 
 	private int x;
 	
 	private int y;
 
-	public Location() {}
+	public Lokasyon() {}
 	
-	public Location(int x, int y) {
+	public Lokasyon(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}

@@ -1,20 +1,12 @@
 
-public class Gargamel extends Enemy {
+public class Gargamel extends Dusman {
 	
-	private int move = 2;
-	
-	private boolean canJump = true;
+	private DusmanDavranis dusmanDavranıs;
 
-	public Gargamel() {
-		super();
+	public Gargamel(DusmanDavranis dusmanDavranis, int dusmanId, String dusmanAdi, Lokasyon lokasyon) {
+		super(dusmanDavranis,dusmanId,dusmanAdi,DusmanTip.Dusman1,lokasyon);
+		this.dusmanDavranıs = dusmanDavranis;
 	}
 
-	public int getMove() {
-		return move;
-	}
-
-	public boolean isCanJump() {
-		return canJump;
-	}	
 
 }
