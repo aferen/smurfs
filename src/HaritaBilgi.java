@@ -4,22 +4,28 @@ import java.util.ArrayList;
 public class HaritaBilgi {
 	
 	private int[][] harita;
-		
-	private ArrayList<Karakter> karakterler;
-
 	
-	public HaritaBilgi(int[][] harita, ArrayList<Karakter> karakterler) {
+	private Oyuncu oyuncu;
+		
+	private ArrayList<Dusman> dusmanlar;
+	
+	public HaritaBilgi(int[][] harita, Oyuncu oyuncu, ArrayList<Dusman> dusmanlar) {
 		super();
 		this.harita = harita;
-		this.karakterler = karakterler;
+		this.oyuncu = oyuncu;
+		this.dusmanlar = dusmanlar;	
 	}
 
 	public int[][] getHarita() {
 		return harita;
 	}
+	
+	public Oyuncu getOyuncu() {
+		return oyuncu;
+	}
 
-	public ArrayList<Karakter> getKarakterler() {
-		return karakterler;
+	public ArrayList<Dusman> getDusmanlar() {
+		return dusmanlar;
 	}
 
 }

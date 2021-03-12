@@ -2,8 +2,9 @@
 public class Puan extends Oyuncu {
 
 	@Override
-	public void PuaniGoster() {
-		super.PuaniGoster();
+	public int PuaniGoster() {
+		//super.PuaniGoster();
+		return 0;
 	}
 	
 }

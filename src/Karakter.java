@@ -9,10 +9,6 @@ public abstract class Karakter {
 	
 	private Lokasyon lokasyon;
 	
-	private OyuncuDavranis oyuncuDavranis;
-	
-	private DusmanDavranis dusmanDavranis;
-
 	public Karakter() {}
 	
 	public Karakter(int id, String ad, KarakterTip tur, Lokasyon lokasyon) {
@@ -55,22 +51,5 @@ public abstract class Karakter {
 		this.lokasyon = lokasyon;
 	}
 
-	public OyuncuDavranis getOyuncuDavranis() {
-		return oyuncuDavranis;
-	}
-
-	public void setOyuncuDavranis(OyuncuDavranis oyuncuDavranis) {
-		this.oyuncuDavranis = oyuncuDavranis;
-	}
-
-	public DusmanDavranis getDusmanDavranis() {
-		return dusmanDavranis;
-	}
-
-	public void setDusmanDavranis(DusmanDavranis dusmanDavranis) {
-		this.dusmanDavranis = dusmanDavranis;
-	}
-
-	
 	public abstract void enKisaYol();
 }

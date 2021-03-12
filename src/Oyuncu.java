@@ -9,6 +9,8 @@ public class Oyuncu extends Karakter {
 	
 	private int puan;
 	
+	private OyuncuDavranis oyuncuDavranis;
+	
 	public Oyuncu() {
 		super();
 	}
@@ -16,7 +18,7 @@ public class Oyuncu extends Karakter {
 	
 	public Oyuncu(OyuncuDavranis oyuncuDavranis,int oyuncuId, String oyuncuAdi, OyuncuTip oyuncuTur, int puan, Lokasyon lokasyon) {
 		super(oyuncuId,oyuncuAdi,KarakterTip.Oyuncu,lokasyon);
-		super.setOyuncuDavranis(oyuncuDavranis);
+		this.oyuncuDavranis= oyuncuDavranis; 
 		this.oyuncuId = oyuncuId;
 		this.oyuncuAdi = oyuncuAdi;
 		this.oyuncuTur = oyuncuTur;
@@ -64,7 +66,19 @@ public class Oyuncu extends Karakter {
 	}
 
 
-	public void PuaniGoster() {}
+	public OyuncuDavranis getOyuncuDavranis() {
+		return oyuncuDavranis;
+	}
+
+
+	public void setOyuncuDavranis(OyuncuDavranis oyuncuDavranis) {
+		this.oyuncuDavranis = oyuncuDavranis;
+	}
+
+
+	public int PuaniGoster() {
+		return puan;
+	}
 
 	@Override
 	public void enKisaYol() {}

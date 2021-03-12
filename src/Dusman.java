@@ -6,12 +6,14 @@ public class Dusman extends Karakter {
 	private String dusmanAdi;
 	
 	private DusmanTip dusmanTur;
+	
+	private DusmanDavranis dusmanDavranis;
 
 	public Dusman() {}
 	
 	public Dusman(DusmanDavranis dusmanDavranis,int dusmanId, String dusmanAdi, DusmanTip dusmanTur,Lokasyon lokasyon) {
 		super(dusmanId,dusmanAdi,KarakterTip.Dusman,lokasyon);
-		super.setDusmanDavranis(dusmanDavranis);
+		this.dusmanDavranis = dusmanDavranis;
 		this.dusmanId = dusmanId;
 		this.dusmanAdi = dusmanAdi;
 		this.dusmanTur = dusmanTur;
@@ -39,6 +41,14 @@ public class Dusman extends Karakter {
 
 	public void setDusmanTur(DusmanTip dusmanTur) {
 		this.dusmanTur = dusmanTur;
+	}
+
+	public DusmanDavranis getDusmanDavranis() {
+		return dusmanDavranis;
+	}
+
+	public void setDusmanDavranis(DusmanDavranis dusmanDavranis) {
+		this.dusmanDavranis = dusmanDavranis;
 	}
 
 	@Override
