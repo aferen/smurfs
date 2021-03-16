@@ -22,6 +22,7 @@ public class Oyun extends JFrame {
 	private Random rand = new Random();
 	private ArrayList<Karakter> karakterler = new ArrayList<Karakter>();
 	private ArrayList<Obje> altinlar = new ArrayList<Obje>();
+	private ArrayList<Lokasyon> eskiYollar = new ArrayList<Lokasyon>();
 	private Obje mantar;
 	private int sayiYukseklik = 11;
 	private int sayiGenislik = 13;
@@ -58,6 +59,7 @@ public class Oyun extends JFrame {
 
 		haritaOlustur(panel);
 		haritaGuncelle();
+		dusmanYol(null,false);
 
 		Thread altin = new Thread(() -> {
 			altinGoster();
@@ -69,6 +71,73 @@ public class Oyun extends JFrame {
 		mantar.start();
 
 		setVisible(true);
+
+	}
+
+	private synchronized void dusmanYol(Dusman item, boolean ilerlet) {
+		ArrayList<Lokasyon> yol;
+		if (eskiYollar != null) {
+			for (Lokasyon lokasyon : eskiYollar) {
+				buttons[lokasyon.getX()][lokasyon.getY()].setBackground(Color.WHITE);
+			}
+			eskiYollar.clear();
+		}
+		for (Dusman dusman : dusmanlar) {
+			if(!dusman.equals(item)) {
+				yol = dusman.enKisaYol(harita, oyuncu.getLokasyon());
+				eskiYollar.addAll(yol);
+				for (Lokasyon lokasyon : yol) {
+					buttons[lokasyon.getX()][lokasyon.getY()].setBackground(dusman.getRenk());
+				}
+				if (ilerlet)
+					dusmanIlerle(dusman, yol);
+			}
+		}
+	}
+	
+
+
+	private synchronized void dusmanIlerle(Dusman dusman, ArrayList<Lokasyon> yol) {
+		Lokasyon yeniLokasyon;
+		if (yol.size() > dusman.getDusmanDavranis().getBirim()) {
+			yeniLokasyon = yol.get(yol.size() - dusman.getDusmanDavranis().getBirim() - 1);
+			for (int i = 0; i < dusman.getDusmanDavranis().getBirim(); i++) {
+				if(buttons[yol.get(yol.size() - i - 1).getX()][yol.get(yol.size() - i - 1).getY()].getBackground() == dusman.getRenk() )
+					buttons[yol.get(yol.size() - i - 1).getX()][yol.get(yol.size() - i - 1).getY()].setBackground(Color.WHITE);
+			}
+			if (isAvailable(yeniLokasyon.getX(), yeniLokasyon.getY(), false)) {
+				buttons[yeniLokasyon.getX()][yeniLokasyon.getY()]
+						.setIcon(buttons[dusman.getLokasyon().getX()][dusman.getLokasyon().getY()].getIcon());
+				buttons[dusman.getLokasyon().getX()][dusman.getLokasyon().getY()].setIcon(null);
+				dusman.setLokasyon(yeniLokasyon);
+			} else if (yeniLokasyon.getX() == oyuncu.getLokasyon().getX()
+					&& yeniLokasyon.getY() == oyuncu.getLokasyon().getY()) {
+				cakisma(dusman);
+			}
+			dusmanYol(null,false);
+		}
+	}
+
+	private synchronized void cakisma(Dusman dusman) {
+		Oyuncu oyuncuPuan =  new Puan(this.oyuncu,dusman);
+		int puan = oyuncuPuan.PuaniGoster();
+		Thread thread3 = new Thread(() -> {
+			puanGuncelle(puan);
+		});
+		thread3.start();
+		if (puan <= 0) {
+			showMessageDialog(null, "Oyun Bitti. Kaybettiniz!");
+			dispose();
+			System.exit(0);
+		} else {
+			buttons[dusman.getIlkYer().getX()][dusman.getIlkYer().getY()]
+					.setIcon(buttons[dusman.getLokasyon().getX()][dusman.getLokasyon().getY()].getIcon());
+//			if(dusman.getLokasyon().getX() != dusman.getIlkYer().getX() && dusman.getLokasyon().getY() != dusman.getIlkYer().getY()) {
+//					
+//			}
+			buttons[dusman.getLokasyon().getX()][dusman.getLokasyon().getY()].setIcon(null);
+			dusman.setLokasyon(dusman.getIlkYer());
+		}
 
 	}
 
@@ -94,7 +163,7 @@ public class Oyun extends JFrame {
 					} else if (altin.getLokasyon().getX() == oyuncu.getLokasyon().getX()
 							&& altin.getLokasyon().getY() == oyuncu.getLokasyon().getY()) {
 						oyuncu.setPuan(oyuncu.getPuan() + altin.getPuan());
-						puanGuncelle();
+						puanGuncelle(oyuncu.PuaniGoster());
 					}
 
 				}
@@ -129,7 +198,7 @@ public class Oyun extends JFrame {
 				} else if (mantar.getLokasyon().getX() == oyuncu.getLokasyon().getX()
 						&& mantar.getLokasyon().getY() == oyuncu.getLokasyon().getY()) {
 					oyuncu.setPuan(oyuncu.getPuan() + mantar.getPuan());
-					puanGuncelle();
+					puanGuncelle(oyuncu.PuaniGoster());
 				}
 
 				Thread.sleep(mantar.getBeklemeSure() * 1000);
@@ -155,7 +224,7 @@ public class Oyun extends JFrame {
 			}
 			if (mantar != null) {
 				if (mantar.getLokasyon().getX() == x && mantar.getLokasyon().getY() == y)
-					return false;	
+					return false;
 			}
 		}
 
@@ -167,39 +236,54 @@ public class Oyun extends JFrame {
 		x = oyuncu.getLokasyon().getX();
 		y = oyuncu.getLokasyon().getY();
 		birim = oyuncu.getOyuncuDavranis().getBirim();
+		Dusman dusman;
+		Dusman temp;
 		switch (keyCode) {
 		case KeyEvent.VK_UP:
 			if (x - birim > 0) {
 				if (harita[x - birim][y] != 0) {
+					dusman = null;
 					for (int i = 1; i <= birim; i++) {
 						if (harita[x - i][y] != 0) {
 							objeKontrol(x - i, y);
+							temp = dusmanKontrol(x - i, y);
+							if(temp != null) {
+								dusman  = temp;
+							}
 							oyuncu.getLokasyon().setX(x - i);
 							buttons[x - i][y].setIcon(buttons[x - i + 1][y].getIcon());
 							buttons[x - i + 1][y].setIcon(null);
-							harita[x - i][y] = 0;
-							harita[x - i + 1][y] = 1;
 							Thread.sleep(250);
+							if(i == birim) {
+								dusmanYol(dusman,true);
+							}
 						} else {
 							break;
 						}
 
 					}
+					
 				}
 			}
 			break;
 		case KeyEvent.VK_DOWN:
 			if (x + birim < sayiYukseklik) {
 				if (harita[x + birim][y] != 0) {
+					dusman = null;
 					for (int i = 1; i <= birim; i++) {
 						if (harita[x + i][y] != 0) {
 							objeKontrol(x + i, y);
+							temp = dusmanKontrol(x + i, y);
+							if(temp != null) {
+								dusman  = temp;
+							}
 							oyuncu.getLokasyon().setX(x + i);
 							buttons[x + i][y].setIcon(buttons[x + i - 1][y].getIcon());
 							buttons[x + i - 1][y].setIcon(null);
-							harita[x + i][y] = 0;
-							harita[x + i - 1][y] = 1;
 							Thread.sleep(250);
+							if(i == birim) {
+								dusmanYol(dusman,true);
+							}
 						} else {
 							break;
 						}
@@ -210,39 +294,51 @@ public class Oyun extends JFrame {
 		case KeyEvent.VK_RIGHT:
 			if (y + birim < sayiGenislik) {
 				if (harita[x][y + birim] != 0) {
+					dusman = null;
 					for (int i = 1; i <= birim; i++) {
 						if (harita[x][y + i] != 0) {
 							objeKontrol(x, y + i);
+							temp = dusmanKontrol(x, y + i);
+							if(temp != null) {
+								dusman  = temp;
+							}						
 							oyuncu.getLokasyon().setY(y + i);
 							buttons[x][y + i].setIcon(buttons[x][y + i - 1].getIcon());
 							buttons[x][y + i - 1].setIcon(null);
-							harita[x][y + i] = 0;
-							harita[x][y + i - 1] = 1;
 							Thread.sleep(250);
 							if (x == 7 && (y + i) == 12) {
-								showMessageDialog(null, "Oyun Bitti. Tebrikler");
+								showMessageDialog(null, "Oyun Bitti. Tebrikler!");
 								dispose();
+								System.exit(0);
+							}
+							if(i == birim) {
+								dusmanYol(dusman,true);
 							}
 						} else {
 							break;
 						}
 					}
-
 				}
 			}
 			break;
 		case KeyEvent.VK_LEFT:
 			if (y - birim > 0) {
 				if (harita[x][y - birim] != 0) {
+					dusman = null;
 					for (int i = 1; i <= birim; i++) {
 						if (harita[x][y - i] != 0) {
-							objeKontrol(x, (y - 1));
+							objeKontrol(x, y - i);
+							temp = dusmanKontrol(x, y - i);
+							if(temp != null) {
+								dusman  = temp;
+							}
 							oyuncu.getLokasyon().setY(y - i);
 							buttons[x][y - i].setIcon(buttons[x][y - i + 1].getIcon());
 							buttons[x][y - i + 1].setIcon(null);
-							harita[x][y - i] = 0;
-							harita[x][y - i + 1] = 1;
 							Thread.sleep(250);
+							if(i == birim) {
+								dusmanYol(dusman,true);
+							}
 						} else {
 							break;
 						}
@@ -253,8 +349,12 @@ public class Oyun extends JFrame {
 		}
 	}
 
-	private void puanGuncelle() {
-		puan.setText("Puan : " + oyuncu.PuaniGoster());
+//	private void puanGuncelle() {
+//		puan.setText("Puan : " + oyuncu.PuaniGoster());
+//	}
+//	
+	private void puanGuncelle(int oyuncuPuan) {
+		puan.setText("Puan : "+ oyuncuPuan);
 	}
 
 	private void objeKontrol(int x, int y) {
@@ -263,7 +363,7 @@ public class Oyun extends JFrame {
 				oyuncu.setPuan(oyuncu.getPuan() + obje.getPuan());
 				obje.setAktif(false);
 				Thread thread3 = new Thread(() -> {
-					puanGuncelle();
+					puanGuncelle(oyuncu.PuaniGoster());
 				});
 				thread3.start();
 			}
@@ -273,12 +373,28 @@ public class Oyun extends JFrame {
 				oyuncu.setPuan(oyuncu.getPuan() + mantar.getPuan());
 				mantar.setAktif(false);
 				Thread thread4 = new Thread(() -> {
-					puanGuncelle();
+					puanGuncelle(oyuncu.PuaniGoster());
 				});
 				thread4.start();
-				
-			}	
+
+			}
 		}
+	}
+
+	private Dusman dusmanKontrol(int x, int y) {
+		Dusman dusman = null;
+		for (Dusman item : dusmanlar) {
+			if (item.getLokasyon().getX() == x && item.getLokasyon().getY() == y) {
+				dusman = item;
+				break;
+			}
+		}
+		if (dusman != null) {
+			cakisma(dusman);
+			return dusman;
+		}
+		return null;
+
 	}
 
 	private void karkaterListeGuncelle() {
@@ -405,6 +521,7 @@ public class Oyun extends JFrame {
 	}
 
 	private void readFile(String filePath) {
+		Dusman dusman;
 		Lokasyon lokasyon = new Lokasyon(0, 0);
 		harita = new int[sayiYukseklik][sayiGenislik];
 		dusmanlar = new ArrayList<Dusman>();
@@ -439,9 +556,15 @@ public class Oyun extends JFrame {
 						}
 					}
 					if (dusmanAd.startsWith("Gargamel")) {
-						dusmanlar.add(new Gargamel(new DusmanDavranis(2, true), dusmanId, dusmanAd, lokasyon));
+						dusman = new Gargamel(new DusmanDavranis(2, true), dusmanId, dusmanAd,
+								new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat()), lokasyon);
+						dusman.setIlkYer(lokasyon);
+						dusmanlar.add(dusman);
 					} else if (dusmanAd.startsWith("Azman")) {
-						dusmanlar.add(new Azman(new DusmanDavranis(1, false), dusmanId, dusmanAd, lokasyon));
+						dusman = new Azman(new DusmanDavranis(1, false), dusmanId, dusmanAd,
+								new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat()), lokasyon);
+						dusman.setIlkYer(lokasyon);
+						dusmanlar.add(dusman);
 					}
 
 				} else {

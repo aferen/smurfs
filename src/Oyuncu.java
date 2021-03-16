@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public class Oyuncu extends Karakter {
 	
@@ -81,5 +82,5 @@ public class Oyuncu extends Karakter {
 	}
 
 	@Override
-	public void enKisaYol() {}
+	public ArrayList<Lokasyon> enKisaYol(int[][] harita, Lokasyon lokasyon) {return null;}
 }

@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public abstract class Karakter {
 	
@@ -51,5 +52,5 @@ public abstract class Karakter {
 		this.lokasyon = lokasyon;
 	}
 
-	public abstract void enKisaYol();
+	public abstract ArrayList<Lokasyon> enKisaYol(int [][] harita, Lokasyon lokasyon);
 }
