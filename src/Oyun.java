@@ -132,10 +132,11 @@ public class Oyun extends JFrame {
 		} else {
 			buttons[dusman.getIlkYer().getX()][dusman.getIlkYer().getY()]
 					.setIcon(buttons[dusman.getLokasyon().getX()][dusman.getLokasyon().getY()].getIcon());
-//			if(dusman.getLokasyon().getX() != dusman.getIlkYer().getX() && dusman.getLokasyon().getY() != dusman.getIlkYer().getY()) {
-//					
-//			}
-			buttons[dusman.getLokasyon().getX()][dusman.getLokasyon().getY()].setIcon(null);
+			if(dusman.getLokasyon().getX() == dusman.getIlkYer().getX() && dusman.getLokasyon().getY() == dusman.getIlkYer().getY()) {
+
+			} else {
+				buttons[dusman.getLokasyon().getX()][dusman.getLokasyon().getY()].setIcon(null);
+			}
 			dusman.setLokasyon(dusman.getIlkYer());
 		}
 
@@ -154,12 +155,12 @@ public class Oyun extends JFrame {
 						randx = rand.nextInt(sayiYukseklik);
 						randy = rand.nextInt(sayiGenislik);
 					}
-					altinlar.add(new Altin("Altın", 5, 10, 5, true, new Lokasyon(randx, randy)));
+					altinlar.add(new Altin("Altin", 5, 10, 5, true, new Lokasyon(randx, randy)));
 				}
 				for (Obje altin : altinlar) {
 					if (isAvailable(altin.getLokasyon().getX(), altin.getLokasyon().getY(), false)) {
 						buttons[altin.getLokasyon().getX()][altin.getLokasyon().getY()]
-								.setIcon(getIconImage("altın", 25, 25));
+								.setIcon(getIconImage("altin", 25, 25));
 					} else if (altin.getLokasyon().getX() == oyuncu.getLokasyon().getX()
 							&& altin.getLokasyon().getY() == oyuncu.getLokasyon().getY()) {
 						oyuncu.setPuan(oyuncu.getPuan() + altin.getPuan());
@@ -349,10 +350,6 @@ public class Oyun extends JFrame {
 		}
 	}
 
-//	private void puanGuncelle() {
-//		puan.setText("Puan : " + oyuncu.PuaniGoster());
-//	}
-//	
 	private void puanGuncelle(int oyuncuPuan) {
 		puan.setText("Puan : "+ oyuncuPuan);
 	}
@@ -426,6 +423,9 @@ public class Oyun extends JFrame {
 						} else {
 							buttons[i][j].setText(door);
 						}
+					}
+					if(buttons[i][j].getBackground() != Color.WHITE) {
+						harita[i][j] = 0;
 					}
 				} else {
 					buttons[i][j].setBackground(Color.WHITE);
@@ -552,7 +552,7 @@ public class Oyun extends JFrame {
 							case "D":
 								lokasyon = new Lokasyon(10, 3);
 								break;
-							}
+							} 
 						}
 					}
 					if (dusmanAd.startsWith("Gargamel")) {
