@@ -7,5 +7,5 @@ java -jar target/smurfs.jar
 ```
 
 ##### Screenshot
-<img alt="img1" src="/docs/img/img1.png" width="300">
-<img alt="img1" src="/docs/img/img2.png" width="300">
+<img alt="img1" src="/docs/img/img1.png" width="600">
+<img alt="img1" src="/docs/img/img2.png" width="600">
