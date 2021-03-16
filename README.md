@@ -1,9 +1,11 @@
 ### The Smurfs With Dijkstra's Algorithm
 A maze game  using Dijkstra's algorithm to find shortest path from enemy to player
 
-#####Run
+##### Run
 ```
 java -jar target/smurfs.jar
 ```
 
-#####Screenshot
+##### Screenshot
+<img alt="img1" src="/docs/img/img1.png" width="300">
+<img alt="img1" src="/docs/img/img2.png" width="300">
